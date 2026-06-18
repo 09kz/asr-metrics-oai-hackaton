@@ -1,8 +1,6 @@
 import os
 import shutil
 import time
-import contextlib
-import io
 import jiwer
 import torch
 import librosa
@@ -40,7 +38,7 @@ def get_speaker_model():
     return speaker_model
 
 def preload_models():
-    """Wczytuje modele (SpeechBrain i SeMaScore) do pamięci RAM/VRAM z wyprzedzeniem."""
+    """Preload models (SpeechBrain and SeMaScore) into RAM/VRAM ahead of time."""
     print("Preloading SpeechBrain model...")
     get_speaker_model()
     print("Preloading SeMaScore model (roberta-base)...")
@@ -93,15 +91,12 @@ def compute_mel_distance(ytrue_audio_paths, ypred_audio_paths, log=False):
     return distances
 
 def compute_semascore(ytrue_texts, ypred_texts, log=False):
+    """Compute SeMaScore for each reference-hypothesis text pair."""
     from sema_score_generator import generate_sema_score
     scores = []
     if log: print(f"Computing SeMaScore for {len(ytrue_texts)} pairs...")
     for yt, yp in zip(ytrue_texts, ypred_texts):
-        if log:
-            res = generate_sema_score(yt, yp)
-        else:
-            with contextlib.redirect_stdout(io.StringIO()):
-                res = generate_sema_score(yt, yp)
+        res = generate_sema_score(yt, yp, verbose=log)
         scores.append(res[0])
     return scores
 
