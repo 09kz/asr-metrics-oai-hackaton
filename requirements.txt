@@ -1,0 +1,9 @@
+jiwer
+speechbrain
+librosa
+torch
+torchaudio
+transformers
+pandas
+soundfile
+bert-score
